@@ -1,0 +1,5 @@
+
+type Timestamp {
+	Seconds: Int
+	Nanos: Int
+}

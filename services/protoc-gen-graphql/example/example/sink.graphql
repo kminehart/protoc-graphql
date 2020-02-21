@@ -1,0 +1,36 @@
+
+// @import timestamp.graphql
+enum Sink_Brand {
+	KRAUS
+	SWANSTONE
+	HOUZER
+	BLANCO
+	KOHLER
+}
+enum Sink_Material_Type {
+	STAINLESS_STEEL
+	COPPER
+	GRANITE
+	SOAPSTONE
+	CERAMIC
+	CAST_IRON
+}
+enum Sink_Material_Finish {
+	NONE
+	POLISHED
+	MIRROR
+	HAMMERED_MIRROR
+	BRIGHT_SATIN
+	BRUSHED_SATIN
+}
+type Sink {
+	Brand: Brand
+	Material: Sink_Material
+	Model: String
+	BasinCount: Int
+	Installed: timestamp.Timestamp
+}
+type Sink_Material {
+	Type: Type
+	Finish: Finish
+}

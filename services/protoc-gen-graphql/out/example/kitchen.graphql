@@ -1,0 +1,55 @@
+
+enum Style {
+	CONTEMPORARY
+	COTTAGE_CHARM
+	MEDITERRANEAN
+	COASTAL
+	OLD_WORLD
+	TRADITIONAL
+}
+
+type dish_counts_map_String_Int {
+	: dish_counts_map_String_Int
+}
+
+type appliance_colors_map_String_Color {
+	: appliance_colors_map_String_Color
+}
+type Kitchen {
+	Style: Style
+	Sink: Sink
+	Utensils: [String]
+	DishCounts: dish_counts_map_String_Int
+	WallColors: [Color]
+	ApplianceColors: appliance_colors_map_String_Color
+}
+type Color {
+	Alpha: Float
+}
+type SauteRequest {
+}
+type SauteResponse {
+}
+type IceRequest {
+}
+type IceResponse {
+}
+type GroceryItem {
+}
+type LoadSummary {
+}
+type DrinkOrder {
+}
+type PreparedDrink {
+}
+type Color_RGB {
+	R: Int
+	G: Int
+	B: Int
+}
+type Color_CMYK {
+	C: Int
+	M: Int
+	Y: Int
+	K: Int
+}

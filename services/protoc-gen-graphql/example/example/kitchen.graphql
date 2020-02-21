@@ -1,0 +1,49 @@
+
+// @import kitchen.graphql
+// @import timestamp.graphql
+enum Style {
+	CONTEMPORARY
+	COTTAGE_CHARM
+	MEDITERRANEAN
+	COASTAL
+	OLD_WORLD
+	TRADITIONAL
+}
+type Kitchen {
+	Style: Style
+	Sink: Sink
+	Utensils: [String]
+	DishCounts: mapString
+	WallColors: []
+	ApplianceColors: mapString
+}
+type Color {
+	Alpha: Float
+}
+type SauteRequest {
+}
+type SauteResponse {
+}
+type IceRequest {
+}
+type IceResponse {
+}
+type GroceryItem {
+}
+type LoadSummary {
+}
+type DrinkOrder {
+}
+type PreparedDrink {
+}
+type Color_RGB {
+	R: Int
+	G: Int
+	B: Int
+}
+type Color_CMYK {
+	C: Int
+	M: Int
+	Y: Int
+	K: Int
+}

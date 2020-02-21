@@ -15,68 +15,49 @@ func (c context) Type(f pgs.Field) TypeName {
 	// If the type is a map, then create another graphql type, and reference it here.
 	case ft.IsMap():
 		key := scalarType(ft.Key().ProtoType())
-		return TypeName(fmt.Sprintf("map%s", key))
+		val := c.elType(ft)
+		return TypeName(fmt.Sprintf("%s_map_%s_%s", ft.Field().Name(), key, val))
 	case ft.IsRepeated():
 		return TypeName(fmt.Sprintf("[%s]", c.elType(ft)))
 	case ft.IsEmbed():
-		// return TypeName(f, ft.Embed()).Pointer()
+		return c.importableTypeName(f, ft.Embed())
 	case ft.IsEnum():
-		// t = TypeName(f, ft.Enum())
+		t = TypeName(PGGUpperCamelCase(ft.Enum().Name()))
 	default:
 		t = scalarType(ft.ProtoType())
-	}
-
-	if f.Syntax() == pgs.Proto2 {
-		return t.Pointer()
 	}
 
 	return t
 }
 
-// func (c context) importableTypeName(f pgs.Field, e pgs.Entity) TypeName {
-// 	t := TypeName(c.Name(e))
-//
-// 	if c.ImportPath(e) == c.ImportPath(f) {
-// 		return t
-// 	}
-//
-// 	return TypeName(fmt.Sprintf("%s.%s", c.PackageName(e), t))
-// }
+func (c context) importableTypeName(f pgs.Field, e pgs.Entity) TypeName {
+	return TypeName(c.Name(e))
+}
 
 func (c context) elType(ft pgs.FieldType) TypeName {
 	el := ft.Element()
 	switch {
 	case el.IsEnum():
-		// return c.importableTypeName(ft.Field(), el.Enum())
+		return c.importableTypeName(ft.Field(), el.Enum())
 	case el.IsEmbed():
-		// return c.importableTypeName(ft.Field(), el.Embed()).Pointer()
+		return c.importableTypeName(ft.Field(), el.Embed())
 	default:
 		return scalarType(el.ProtoType())
 	}
-
-	return ""
 }
 
 func scalarType(t pgs.ProtoType) TypeName {
 	switch t {
-	case pgs.DoubleT:
-		return "float64"
-	case pgs.FloatT:
-		return "float32"
-	case pgs.Int64T, pgs.SFixed64, pgs.SInt64:
-		return "int64"
-	case pgs.UInt64T, pgs.Fixed64T:
-		return "uint64"
-	case pgs.Int32T, pgs.SFixed32, pgs.SInt32:
-		return "int32"
-	case pgs.UInt32T, pgs.Fixed32T:
-		return "uint32"
+	case pgs.FloatT, pgs.DoubleT:
+		return "Float"
+	case pgs.UInt32T, pgs.Fixed32T, pgs.Int32T, pgs.SFixed32, pgs.SInt32, pgs.UInt64T, pgs.Fixed64T, pgs.Int64T, pgs.SFixed64, pgs.SInt64:
+		return "Int"
 	case pgs.BoolT:
-		return "bool"
+		return "Boolean"
 	case pgs.StringT:
-		return "string"
-	case pgs.BytesT:
-		return "[]byte"
+		return "String"
+	case pgs.BytesT: // wtf am I supposed to do here lmao
+		return "String"
 	default:
 		panic("unreachable: invalid scalar type")
 	}
@@ -111,23 +92,6 @@ func (n TypeName) Key() TypeName {
 	}
 
 	return TypeName(parts[1])
-}
-
-// IsPointer reports whether TypeName n is a pointer type, slice or a map.
-func (n TypeName) IsPointer() bool {
-	ns := string(n)
-	return strings.HasPrefix(ns, "*") ||
-		strings.HasPrefix(ns, "[") ||
-		strings.HasPrefix(ns, "map[")
-}
-
-// Pointer converts TypeName n to it's pointer type. If n is already a pointer,
-// slice, or map, it is returned unmodified.
-func (n TypeName) Pointer() TypeName {
-	if n.IsPointer() {
-		return n
-	}
-	return TypeName("*" + string(n))
 }
 
 // Value converts TypeName n to it's value type. If n is already a value type,

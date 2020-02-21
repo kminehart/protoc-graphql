@@ -1,3 +1,5 @@
+// Credits to: https://github.com/lyft/protoc-gen-star/
+
 syntax = "proto3";
 package kitchen;
 

@@ -2,6 +2,7 @@ package pgsgql
 
 import (
 	"fmt"
+	"log"
 	"unicode"
 	"unicode/utf8"
 
@@ -15,12 +16,15 @@ func (c context) Name(node pgs.Node) pgs.Name {
 		Name() pgs.Name
 		Parent() pgs.ParentEntity
 	}
-
 	switch en := node.(type) {
 	case pgs.Package: // the package name for the first file (should be consistent)
-		return c.PackageName(en)
+		log.Println("Handling package...", en.ProtoName())
+		// return en
+		return ""
 	case pgs.File: // the package name for this file
-		return c.PackageName(en)
+		log.Println("Handling file...", en.Name())
+		// return en
+		return ""
 	case ChildEntity: // Message or Enum types, which may be nested
 		if p, ok := en.Parent().(pgs.Message); ok {
 			return pgs.Name(joinChild(c.Name(p), en.Name()))
@@ -30,11 +34,8 @@ func (c context) Name(node pgs.Node) pgs.Name {
 		return replaceProtected(PGGUpperCamelCase(en.Name()))
 	case pgs.OneOf: // oneof field names cannot conflict with other generated methods
 		return replaceProtected(PGGUpperCamelCase(en.Name()))
-	case pgs.EnumValue: // EnumValue are prefixed with the enum name
-		if _, ok := en.Enum().Parent().(pgs.File); ok {
-			return pgs.Name(joinNames(c.Name(en.Enum()), en.Name()))
-		}
-		return pgs.Name(joinNames(c.Name(en.Enum().Parent()), en.Name()))
+	case pgs.EnumValue:
+		return pgs.Name(en.Name())
 	case pgs.Service: // always return the server name
 		return c.ServerName(en)
 	case pgs.Entity: // any other entity should be just upper-camel-cased
@@ -106,6 +107,7 @@ func replaceProtected(n pgs.Name) pgs.Name {
 	if use, protected := protectedNames[n]; protected {
 		return use
 	}
+
 	return n
 }
 
